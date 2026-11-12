@@ -60,6 +60,19 @@
     <radialGradient id="vig" cx=".5" cy=".5" r=".75">
       <stop offset=".6" stop-color="#5a4630" stop-opacity="0"/><stop offset="1" stop-color="#5a4630" stop-opacity=".35"/>
     </radialGradient>
+    <linearGradient id="gold" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="520" y2="0" spreadMethod="repeat" gradientTransform="rotate(18)">
+      <stop offset="0" stop-color="#b9831c"/><stop offset=".28" stop-color="#ffe08a"/><stop offset=".42" stop-color="#fffbe6"/>
+      <stop offset=".56" stop-color="#ffd36b"/><stop offset="1" stop-color="#b9831c"/>
+    </linearGradient>
+    <filter id="glow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="goldglow" filterUnits="userSpaceOnUse" x="0" y="200" width="1920" height="500">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="9" result="b"/>
+      <feFlood flood-color="#ffd36b" flood-opacity=".55"/><feComposite in2="b" operator="in" result="g"/>
+      <feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <path id="star" d="M0 -1 Q0.13 -0.13 1 0 Q0.13 0.13 0 1 Q-0.13 0.13 -1 0 Q-0.13 -0.13 0 -1 Z"/>
   </defs>
 
   <rect width="1920" height="1080" fill="#efe6d4"/>
@@ -97,17 +110,18 @@
   <!-- titles -->
   <g id="title1" font-family="'Noto Serif KR',serif" text-anchor="middle">
     <ellipse id="wash" cx="960" cy="400" rx="520" ry="120" fill="#1b1b1b" opacity="0" filter="url(#ink)"/>
-    <text id="t_main" x="960" y="470" font-size="210" font-weight="900" fill="#1b1b1b" fill-opacity="0" stroke="#1b1b1b" stroke-width="3.2" filter="url(#line)" letter-spacing="20">라인댄스</text>
+    <g id="k_title"></g>
     <text id="t_en" x="960" y="560" font-size="40" font-weight="600" fill="#b3322a" letter-spacing="34" opacity="0">L I N E · D A N C E</text>
-    <text id="t_tag" x="960" y="650" font-size="48" font-weight="600" fill="none" stroke="#1b1b1b" stroke-width="1.6" filter="url(#line)">나이도 실력도 상관없이, 함께 맞추는 발걸음</text>
+    <g id="k_tag"></g>
   </g>
 
   <!-- end card -->
   <g id="endcard" text-anchor="middle">
-    <path id="sweep" d="M 230 470 C 600 420 1000 520 1360 455 C 1500 430 1620 450 1700 470" fill="none" stroke="#151515" stroke-width="210" stroke-linecap="round" filter="url(#brushBig)" opacity=".92"/>
-    <text id="e_en" x="960" y="330" font-family="'Cormorant Garamond',serif" font-style="italic" font-weight="600" font-size="84" fill="none" stroke="#1b1b1b" stroke-width="1.8" filter="url(#line)">YounJu Lee</text>
-    <text id="e_main" x="960" y="510" font-family="'Noto Serif KR',serif" font-weight="900" font-size="132" fill="#f3ead8" fill-opacity="0" stroke="#f3ead8" stroke-width="2.6" filter="url(#line)" letter-spacing="8">이윤주의 라인댄스</text>
-    <text id="e_sub" x="960" y="660" font-family="'Noto Serif KR',serif" font-weight="600" font-size="50" fill="#1b1b1b" opacity="0" letter-spacing="6">지금, 함께 시작하세요</text>
+    <path id="sweep" d="M 200 480 C 600 440 1000 520 1360 470 C 1500 450 1640 465 1740 480" fill="none" stroke="#151515" stroke-width="330" stroke-linecap="round" filter="url(#brushBig)" opacity=".92"/>
+    <g id="k_en"></g>
+    <g id="k_name" filter="url(#goldglow)"></g>
+    <g id="k_sub"></g>
+    <g id="sparks" filter="url(#glow)"></g>
     <g id="seal" opacity="0" filter="url(#cut)">
       <rect x="-58" y="-80" width="116" height="160" rx="10" fill="#b3322a"/>
       <rect x="-48" y="-70" width="96" height="140" rx="6" fill="none" stroke="#f3ead8" stroke-width="3"/>
@@ -137,7 +151,7 @@ const cl=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
 const ease=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
 const eo=x=>1-Math.pow(1-x,3);
 const seg=(t,a,b,f=ease)=>f(cl((t-a)/(b-a)));
-const DUR=30, BPM=120;
+const DUR=30, BPM=128;
 
 const CAPS=["한 걸음, 또 한 걸음.","음악에 몸을 맡기면, 선이 춤이 됩니다.","나이도 실력도 상관없어요. 함께 맞추는 발걸음.","이윤주의 라인댄스. 지금, 함께 시작하세요."];
 const VT=[0.8,7.2,14.4,23.6];
@@ -149,7 +163,63 @@ function draw(e,p){e.style.strokeDashoffset=e._L*(1-p)}
 const textDash=(e,L)=>{e._L=L;e.style.strokeDasharray=L+' '+L;return e};
 
 const dline=prepDash($('dline')), sweep=prepDash($('sweep'));
-const tMain=textDash($('t_main'),1400), tTag=textDash($('t_tag'),500), eEn=textDash($('e_en'),900), eMain=textDash($('e_main'),900);
+
+/* ---------- kinetic typography ---------- */
+const KC={}, FS="'Noto Serif KR',serif", FE="'Cormorant Garamond',serif";
+const backOut=x=>{const c1=1.9,c3=c1+1;return 1+c3*Math.pow(x-1,3)+c1*Math.pow(x-1,2)};
+function measure(ch,r){
+  const t=el('text',{x:0,y:0,'font-size':r.size,'font-weight':r.weight||900,'font-family':r.family||FS,'font-style':r.style||'normal',visibility:'hidden'},$('svg'));
+  t.textContent=ch; const w=t.getComputedTextLength(); t.remove(); return w+(r.ls||0);
+}
+function buildK(id,runs,cx,y){
+  const g=$(id); g.innerHTML=''; const items=[];
+  runs.forEach(r=>{for(const ch of r.t) items.push({ch,r,w:ch===' '?r.size*0.3:measure(ch,r)})});
+  const total=items.reduce((a,i)=>a+i.w,0); let x=cx-total/2; const chars=[];
+  items.forEach(it=>{
+    if(it.ch!==' '){
+      const e=el('text',{'font-size':it.r.size,'font-weight':it.r.weight||900,'font-family':it.r.family||FS,'font-style':it.r.style||'normal','text-anchor':'middle',fill:it.r.fill||'#1b1b1b',opacity:0},g);
+      if(it.r.stroke){e.setAttribute('stroke',it.r.stroke);e.setAttribute('stroke-width',it.r.sw||2);e.setAttribute('paint-order','stroke')}
+      e.textContent=it.ch; chars.push({e,cx:x+it.w/2,y,r:it.r});
+    }
+    x+=it.w;
+  });
+  KC[id]={chars,x0:cx-total/2,x1:cx+total/2,y}; return KC[id];
+}
+let KB=false;
+async function buildKinetic(){
+  await Promise.all([document.fonts.load('900 100px "Noto Serif KR"','라인댄스이윤주의'),document.fonts.load('600 48px "Noto Serif KR"','나이도실력상관없이함께맞추는발걸음지금시작하세요'),
+    document.fonts.load('italic 600 64px "Cormorant Garamond"','YounJu Lee')].map(p=>p.catch(()=>{})));
+  buildK('k_title',[{t:'라인댄스',size:210,fill:'#c2362c',stroke:'#1b1b1b',sw:4,ls:16}],960,470);
+  buildK('k_tag',[{t:'나이도 실력도 상관없이, 함께 맞추는 발걸음',size:48,weight:600,fill:'#1b1b1b'}],960,650);
+  buildK('k_en',[{t:'YounJu Lee',size:70,weight:600,family:FE,style:'italic',fill:'#ffe9a8',ls:4}],960,350);
+  const nm=buildK('k_name',[{t:'이윤주',size:200,fill:'url(#gold)',stroke:'#fff3c4',sw:1.5,ls:10},{t:'의 라인댄스',size:96,fill:'#f3ead8',ls:4}],960,545);
+  buildK('k_sub',[{t:'지금, 함께 시작하세요',size:50,weight:600,fill:'#1b1b1b',ls:6}],960,725);
+  // sparkles around the name
+  const sg=$('sparks'); sg.innerHTML=''; SP.length=0;
+  const W=nm.x1-nm.x0, seed=[[.04,.05,26],[.13,.92,18],[.22,.1,15],[.31,.98,22],[.42,.03,17],[.5,.9,28],[.6,.08,20],[.7,.95,16],[.82,.04,24],[.95,.2,30],[.9,.85,18],[.02,.7,16]];
+  seed.forEach(([fx,fy,s],i)=>{const u=el('use',{href:'#star',fill:'#fff6c8'},sg);SP.push({u,x:nm.x0+fx*W,y:nm.y-190+fy*215,s,ph:i*0.173})});
+  KB=true;
+}
+const SP=[];
+function animK(id,t,t0,stag,dur,mode,out=1){
+  const k=KC[id]; if(!k)return;
+  k.chars.forEach((c,i)=>{
+    const p=cl((t-t0-i*stag)/dur), pe=mode==='pop'?backOut(p):eo(p);
+    const sc=mode==='pop'?0.15+0.85*pe:1, dy=(1-pe)*(mode==='rise'?70:45), rot=(1-pe)*(i%2?-16:16);
+    c.e.setAttribute('transform',`translate(${c.cx},${c.y+dy}) rotate(${rot}) scale(${sc})`);
+    c.e.setAttribute('opacity',cl(p*3)*out);
+  });
+}
+function animDraw(id,t,t0,stag,dur,out=1){
+  const k=KC[id]; if(!k)return;
+  k.chars.forEach((c,i)=>{
+    const p=cl((t-t0-i*stag)/dur), f=cl((p-.55)/.45), b=backOut(f);
+    c.e.style.strokeDasharray='1100 1100'; c.e.style.strokeDashoffset=1100*(1-eo(cl(p/.7)));
+    c.e.setAttribute('fill-opacity',f);
+    c.e.setAttribute('transform',`translate(${c.cx},${c.y}) translate(0,-60) scale(${1+0.06*Math.sin(Math.PI*f)}) translate(0,60)`);
+    c.e.setAttribute('opacity',cl(p*8)*out);
+  });
+}
 
 /* footprints along the dance line */
 const prints=[];
@@ -230,17 +300,21 @@ function render(t){
 
   // title phase
   const tOut=1-seg(t,19.6,20.6);
-  draw(tMain,seg(t,10.6,15,x=>x)); tMain.setAttribute('fill-opacity',seg(t,14.2,16)*0.12);
+  animDraw('k_title',t,10.6,0.5,1.7,1);
   $('wash').setAttribute('opacity',seg(t,13.5,16)*0.10*tOut);
   $('t_en').setAttribute('opacity',seg(t,15,16.2)); $('t_en').setAttribute('letter-spacing',34-14*seg(t,15,17));
-  draw(tTag,seg(t,15,19,x=>x)); tTag.setAttribute('fill',seg(t,18.5,19.4)>0?`rgba(27,27,27,${seg(t,18.5,19.4)})`:'none');
+  animK('k_tag',t,15.2,0.07,0.6,'rise',1);
   $('title1').setAttribute('opacity',tOut);
 
   // end card
   draw(sweep,seg(t,20.6,22.2)); sweep.setAttribute('visibility',t>20.5?'visible':'hidden');
-  draw(eEn,seg(t,22.4,25,x=>x));
-  draw(eMain,seg(t,22.6,25.6,x=>x)); eMain.setAttribute('fill-opacity',seg(t,25.2,26.4)*.95);
-  const e_sub=$('e_sub'); e_sub.setAttribute('opacity',seg(t,26.4,27.4)); e_sub.setAttribute('transform',`translate(0,${(1-seg(t,26.4,27.4,eo))*20})`);
+  animK('k_en',t,22.3,0.07,0.55,'pop');
+  animK('k_name',t,22.9,0.16,0.7,'pop');
+  animK('k_sub',t,26.0,0.05,0.5,'rise');
+  // gold shimmer + twinkling sparkles
+  const gd=$('gold'); const gx=(t*340)%520; gd.setAttribute('x1',gx); gd.setAttribute('x2',gx+520);
+  SP.forEach(s=>{const v=Math.max(0,Math.sin(Math.PI*2*((t-24.2)*1.3+s.ph*5)));const a=Math.pow(v,3)*cl((t-24)/0.6);
+    s.u.setAttribute('transform',`translate(${s.x},${s.y}) rotate(${(t*40+s.ph*300)%360}) scale(${s.s*2.1*(0.3+0.9*a)})`);s.u.setAttribute('opacity',a)});
   const sl=seg(t,26,26.5,eo); const seal=$('seal'); seal.setAttribute('opacity',sl);
   seal.setAttribute('transform',`translate(1610 640) rotate(-6) scale(${1.9-0.9*sl})`);
 
@@ -254,35 +328,42 @@ function render(t){
   $('svg').style.opacity = 1-seg(t,29.4,30)*0.0;
 }
 
-/* ---------- music (Web Audio, 120 BPM, country/line-dance groove + pentatonic pluck) ---------- */
+/* ---------- music (Web Audio, 128 BPM, bright K-pop / pop line-dance groove) ---------- */
 function buildMusic(ctx,out,t0){
   const sb=60/BPM, mk=(f)=>440*Math.pow(2,(f-69)/12);
   const noise=ctx.createBuffer(1,ctx.sampleRate,ctx.sampleRate); const nd=noise.getChannelData(0); for(let i=0;i<nd.length;i++)nd[i]=Math.random()*2-1;
   const env=(g,t,a,v,d)=>{g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(v,t+a);g.gain.exponentialRampToValueAtTime(0.0001,t+a+d)};
-  const kick=t=>{const o=ctx.createOscillator(),g=ctx.createGain();o.frequency.setValueAtTime(130,t);o.frequency.exponentialRampToValueAtTime(42,t+.18);env(g,t,.003,.9,.3);o.connect(g).connect(out);o.start(t);o.stop(t+.4)};
-  const nz=(t,hp,v,d)=>{const s=ctx.createBufferSource();s.buffer=noise;const f=ctx.createBiquadFilter();f.type='highpass';f.frequency.value=hp;const g=ctx.createGain();env(g,t,.002,v,d);s.connect(f).connect(g).connect(out);s.start(t);s.stop(t+d+.05)};
-  const tone=(t,n,type,v,d,lp=3000,bend=0)=>{const o=ctx.createOscillator(),f=ctx.createBiquadFilter(),g=ctx.createGain();o.type=type;o.frequency.setValueAtTime(mk(n),t);if(bend)o.frequency.exponentialRampToValueAtTime(mk(n-bend),t+d);f.type='lowpass';f.frequency.setValueAtTime(lp,t);f.frequency.exponentialRampToValueAtTime(lp*.25,t+d);env(g,t,.005,v,d);o.connect(f).connect(g).connect(out);o.start(t);o.stop(t+d+.05)};
-  const pad=(t,ns,d)=>ns.forEach(n=>{const o=ctx.createOscillator(),g=ctx.createGain();o.type='triangle';o.frequency.value=mk(n);g.gain.setValueAtTime(0.0001,t);g.gain.linearRampToValueAtTime(.035,t+.6);g.gain.linearRampToValueAtTime(0.0001,t+d);o.connect(g).connect(out);o.start(t);o.stop(t+d+.1)});
-  // G C D G  (roots)
-  const prog=[[43,[55,59,62]],[48,[55,60,64]],[50,[57,62,66]],[43,[55,59,62]]];
-  const penta=[67,69,71,74,76,79,81];
-  const mel=[0,2,3,2, 4,3,2,-1, 1,2,4,5, 4,2,3,-1, 2,4,5,6, 5,4,2,-1, 3,2,1,0, 1,2,0,-1];
-  const bars=15;
+  const kick=t=>{const o=ctx.createOscillator(),g=ctx.createGain();o.frequency.setValueAtTime(150,t);o.frequency.exponentialRampToValueAtTime(48,t+.12);env(g,t,.003,.85,.24);o.connect(g).connect(out);o.start(t);o.stop(t+.3)};
+  const nz=(t,hp,v,d,type='highpass')=>{const s=ctx.createBufferSource();s.buffer=noise;const f=ctx.createBiquadFilter();f.type=type;f.frequency.value=hp;const g=ctx.createGain();env(g,t,.002,v,d);s.connect(f).connect(g).connect(out);s.start(t);s.stop(t+d+.05)};
+  const clap=t=>{nz(t,1400,.42,.13,'bandpass');nz(t+.012,1800,.3,.11,'bandpass');nz(t+.024,2200,.25,.1,'bandpass')};
+  const tone=(t,n,type,v,d,lp=3000,bend=0,a=.005)=>{const o=ctx.createOscillator(),f=ctx.createBiquadFilter(),g=ctx.createGain();o.type=type;o.frequency.setValueAtTime(mk(n),t);if(bend)o.frequency.exponentialRampToValueAtTime(mk(n+bend),t+d);f.type='lowpass';f.frequency.setValueAtTime(lp,t);f.frequency.exponentialRampToValueAtTime(Math.max(200,lp*.3),t+d);env(g,t,a,v,d);o.connect(f).connect(g).connect(out);o.start(t);o.stop(t+d+.05)};
+  const pad=(t,ns,d,v=.03)=>ns.forEach(n=>{const o=ctx.createOscillator(),g=ctx.createGain();o.type='triangle';o.frequency.value=mk(n);g.gain.setValueAtTime(0.0001,t);g.gain.linearRampToValueAtTime(v,t+.25);g.gain.linearRampToValueAtTime(0.0001,t+d);o.connect(g).connect(out);o.start(t);o.stop(t+d+.1)});
+  const bell=(t,n,v=.08)=>{tone(t,n,'sine',v,.9,6000,0,.002);tone(t,n+12,'sine',v*.4,.6,6000,0,.002)};
+  // C  G  Am  F  (I V vi IV) - bright major feel
+  const roots=[36,43,45,41], chords=[[60,64,67],[59,62,67],[57,60,64],[57,60,65]];
+  const lead=[72,74,76,79,81,84,76,74];        // C-major pentatonic hook
+  const hook=[[0,2,4,2,5,4,2,-1],[1,3,5,3,6,5,3,-1],[2,4,5,4,7,5,4,-1],[0,2,4,5,7,5,4,2]];
+  const bars=16;
   for(let b=0;b<bars;b++){
-    const [root,ch]=prog[Math.floor(b/2)%4]; const bt=t0+b*4*sb;
-    pad(bt,ch,4*sb);
+    const bt=t0+b*4*sb, c=b%4, last=b===bars-1;
+    pad(bt,chords[c],4*sb,b>=11?.04:.028);
     for(let q=0;q<4;q++){
       const t=bt+q*sb;
-      if(b>=1){ if(q%2===0)kick(t); else {nz(t,1800,.35,.16);} }
-      if(b>=1){ nz(t+sb/2,7000,.12,.04); nz(t,7000,.07,.03); }
-      if(b>=1) tone(t,q%2===0?root:root+7,'triangle',.32,sb*.85,900);
+      if(b>=1&&!last){ kick(t); if(b>=2&&(q===1||q===3)) clap(t); }
+      if(last&&q===0){ kick(t); clap(t); }
+      if(b>=1&&!last){ nz(t+sb/2,7500,.2,.09); nz(t,9000,.06,.03); nz(t+sb/4,9000,.04,.025); nz(t+sb*3/4,9000,.04,.025); }
+      if(b>=1&&!last){ tone(t,roots[c],'square',.17,sb*.42,420); tone(t+sb/2,roots[c]+12,'square',.13,sb*.3,520); }       // bouncy bass
+      if(b>=2&&!last){ chords[c].forEach(n=>tone(t+sb/2,n+12,'sawtooth',.045,.12,3200)); }                                 // off-beat stabs
     }
-    for(let e=0;e<8;e++){ const m=mel[(b*8+e)%mel.length]; if(m<0||(b<1&&e%2))continue;
-      tone(bt+e*sb/2,penta[m],'sawtooth',.11,sb*.9,2600,0.4); }
-    if(b>=11&&b<14) for(let e=0;e<8;e+=2) tone(bt+e*sb/2+sb/4,penta[(e+b)%7]+12,'square',.025,.12,4000);
+    if(b>=3&&!last) for(let s=0;s<16;s++){ const n=chords[c][s%3]+12+(s%6>=3?12:0); tone(bt+s*sb/4,n,'triangle',.05,.1,5000); } // sparkle arp
+    if(b>=4&&!last){ const h=hook[c]; for(let e=0;e<8;e++){ const m=h[e]; if(m<0)continue; tone(bt+e*sb/2,lead[m%8]+(b>=11?0:-0),'sawtooth',b>=11?.12:.085,sb*.45,4200,0,.004); if(b>=11) tone(bt+e*sb/2,lead[m%8]+12,'square',.03,sb*.3,5000); } }
+    if(b===10){ for(let i=0;i<16;i++) nz(bt+2*sb+i*sb/8,1500+i*500,.05+i*.008,.1); }                                           // riser
+    if(b===11){ nz(bt,3500,.5,.9); kick(bt); }                                                                                 // crash into end card
   }
-  // final ring
-  pad(t0+bars*4*sb-0.1,[55,59,62,67],2.5); tone(t0+29.9-0.1,79,'sawtooth',.1,1.6,2600,0.5);
+  // name reveal chimes (shine)
+  [84,88,91,96,100,103].forEach((n,i)=>bell(t0+24.0+i*0.14,n,.07));
+  bell(t0+26.1,96,.08); bell(t0+27.4,103,.06);
+  pad(t0+bars*4*sb-1.5,[60,64,67,72],2.5,.04);
 }
 
 /* ---------- playback ---------- */
@@ -290,6 +371,7 @@ let ctx,t0,raf;
 function b64buf(b){const s=atob(b),u=new Uint8Array(s.length);for(let i=0;i<s.length;i++)u[i]=s.charCodeAt(i);return u.buffer}
 async function start(){
   $('play').style.display='none';
+  if(!KB) await buildKinetic();
   if(ctx) ctx.close();
   ctx=new (window.AudioContext||window.webkitAudioContext)();
   const master=ctx.createGain(); master.connect(ctx.destination);
@@ -307,7 +389,7 @@ async function start(){
 }
 $('play').onclick=start;
 const qt=new URLSearchParams(location.search).get('t');
-if(qt!==null){ $('play').style.display='none'; document.fonts.ready.then(()=>render(+qt)); } else render(0);
+if(qt!==null){ $('play').style.display='none'; buildKinetic().then(()=>render(+qt)); } else buildKinetic().then(()=>render(0));
 </script>
 </body>
 </html>
